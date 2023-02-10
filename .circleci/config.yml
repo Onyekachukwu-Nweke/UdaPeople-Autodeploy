@@ -83,32 +83,31 @@ jobs:
 
   test-frontend:
     executor: node-executor
-    working_directory: ~/UdaPeople-Autodeploy/frontend
     steps:
       - checkout
       - restore_cache:
-          keys:
-            - frontend-deps-{{ checksum "frontend/package-lock.json" }}
+          keys: [frontend-build]
       - run:
           name: Install dependencies
           command: |
+            cd frontend
             npm install
       - run:
           name: Run Frontend Unit Tests
           command: |
+            cd frontend
             npm run test
                 
   test-backend:
     executor: node-executor
-    working_directory: ~/UdaPeople-Autodeploy/backend/test
     steps:
       - checkout
       - restore_cache:
-          keys:
-            - backend-deps-{{ checksum "backend/package-lock.json" }}
+          keys: [backend-build]
       - run:
           name: Install dependencies
           command: |
+            cd backend
             npm install
       - run:
           name: Run Backend Unit Tests
@@ -117,21 +116,39 @@ jobs:
             npm run test
 
             
-#   scan-frontend:
-#     docker:
-#       # Docker image here
-#     steps:
-#       # Checkout code from git
-#       # Restore from cache
-#       # Your job code here
+  scan-frontend:
+    executor: node-executor
+    steps:
+      - checkout
+      - restore_cache:
+          keys: [frontend-build]
+      - run:
+          name: Install dependencies
+          command: |
+            cd frontend
+            npm install
+      - run:
+          name: Scan frontend packages
+          command: |
+            cd frontend
+            npm audit --audit-level=critical
 
-#   scan-backend:
-#     docker:
-#       # Docker image here
-#     steps:
-#       # Checkout code from git
-#       # Restore from cache
-#       # Your job code here
+  scan-backend:
+    executor: node-executor
+    steps:
+      - checkout
+      - restore_cache:
+          keys: [backend-build]
+      - run:
+          name: Install dependencies
+          command: |
+            cd backend
+            npm install
+      - run:
+          name: Scan frontend packages
+          command: |
+            cd backend
+            npm audit --audit-level=critical
 
 #   deploy-infrastructure:
 #     docker:
@@ -304,14 +321,14 @@ workflows:
     jobs:
       - build-frontend
       - build-backend
-      # - test-frontend:
-      #     requires: [build-frontend]
-      # - test-backend:
-      #     requires: [build-backend]
-      # - scan-backend:
-      #     requires: [build-backend]
-      # - scan-frontend:
-      #     requires: [build-frontend]
+      - test-frontend:
+          requires: [build-frontend]
+      - test-backend:
+          requires: [build-backend]
+      - scan-backend:
+          requires: [build-backend]
+      - scan-frontend:
+          requires: [build-frontend]
       # - deploy-infrastructure:
       #     requires: [test-frontend, test-backend, scan-frontend, scan-backend]
       #     filters:
