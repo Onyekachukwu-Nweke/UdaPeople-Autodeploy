@@ -43,7 +43,6 @@ executors:
 jobs:
   build-frontend:
     executor: node-executor
-    working_directory: frontend/
     steps:
       - checkout
       - restore_cache:
@@ -52,10 +51,12 @@ jobs:
       - run:
           name: Install dependencies
           command: |
+            cd frontend
             npm install
       - run:
           name: Build front-end
           command: |
+            cd frontend
             npm run build
       - save_cache:
           paths: [frontend/node_modules]
@@ -63,7 +64,6 @@ jobs:
 
   build-backend:
     executor: node-executor
-    working_directory: backend/
     steps:
       - checkout
       - restore_cache:
@@ -72,10 +72,12 @@ jobs:
       - run:
           name: Install dependencies
           command: |
+            cd backend
             npm install
       - run:
           name: Build back-end
           command: |
+            cd backend
             npm run build
       - save_cache:
           paths: [backend/node_modules]
