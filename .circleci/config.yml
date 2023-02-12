@@ -255,21 +255,18 @@ jobs:
       - destroy-environment     
 
   run-migrations:
-      executor: python-executor
+      executor: node-executor
       steps:
         - checkout
         - install_awscli
-        - install_nodejs
-        - restore_cache:
-            keys: [backend-build]
+        # - restore_cache:
+        #     keys: [backend-build]
         - run:
             name: Run migrations
             command: |
               # Your code here
               cd backend
               npm install
-              npm audit fix --force --audit-level=critical
-              npm run build
               npm run migrations > migrations_dump.txt
               cat migrations_dump.txt
         - run:
