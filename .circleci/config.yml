@@ -83,156 +83,156 @@ executors:
       - image: cimg/python:3.10
             
 jobs:
-  build-frontend:
-    executor: node-executor
-    steps:
-      - checkout
-      - restore_cache:
-          keys: [frontend-build]
-      - run:
-          name: Install dependencies
-          command: |
-            cd frontend
-            npm install
-      - run:
-          name: Build front-end
-          command: |
-            cd frontend
-            npm run build
-      - save_cache:
-          paths: [frontend/node_modules]
-          key: frontend-build
+  # build-frontend:
+  #   executor: node-executor
+  #   steps:
+  #     - checkout
+  #     - restore_cache:
+  #         keys: [frontend-build]
+  #     - run:
+  #         name: Install dependencies
+  #         command: |
+  #           cd frontend
+  #           npm install
+  #     - run:
+  #         name: Build front-end
+  #         command: |
+  #           cd frontend
+  #           npm run build
+  #     - save_cache:
+  #         paths: [frontend/node_modules]
+  #         key: frontend-build
 
-  build-backend:
-    executor: node-executor
-    steps:
-      - checkout
-      - restore_cache:
-          keys: [backend-build]
-      - run:
-          name: Install dependencies
-          command: |
-            cd backend
-            npm install
-      - run:
-          name: Build back-end
-          command: |
-            cd backend
-            npm run build
-      - save_cache:
-          paths: [backend/node_modules]
-          key: backend-build
+  # build-backend:
+  #   executor: node-executor
+  #   steps:
+  #     - checkout
+  #     - restore_cache:
+  #         keys: [backend-build]
+  #     - run:
+  #         name: Install dependencies
+  #         command: |
+  #           cd backend
+  #           npm install
+  #     - run:
+  #         name: Build back-end
+  #         command: |
+  #           cd backend
+  #           npm run build
+  #     - save_cache:
+  #         paths: [backend/node_modules]
+  #         key: backend-build
 
-  test-frontend:
-    executor: node-executor
-    steps:
-      - checkout
-      - restore_cache:
-          keys: [frontend-build]
-      - run:
-          name: Install dependencies
-          command: |
-            cd frontend
-            npm install
-      - run:
-          name: Run Frontend Unit Tests
-          command: |
-            cd frontend
-            npm run test
+  # test-frontend:
+  #   executor: node-executor
+  #   steps:
+  #     - checkout
+  #     - restore_cache:
+  #         keys: [frontend-build]
+  #     - run:
+  #         name: Install dependencies
+  #         command: |
+  #           cd frontend
+  #           npm install
+  #     - run:
+  #         name: Run Frontend Unit Tests
+  #         command: |
+  #           cd frontend
+  #           npm run test
                 
-  test-backend:
-    executor: node-executor
-    steps:
-      - checkout
-      - restore_cache:
-          keys: [backend-build]
-      - run:
-          name: Install dependencies
-          command: |
-            cd backend
-            npm install
-      - run:
-          name: Run Backend Unit Tests
-          command: |
-            cd backend
-            npm run test
+  # test-backend:
+  #   executor: node-executor
+  #   steps:
+  #     - checkout
+  #     - restore_cache:
+  #         keys: [backend-build]
+  #     - run:
+  #         name: Install dependencies
+  #         command: |
+  #           cd backend
+  #           npm install
+  #     - run:
+  #         name: Run Backend Unit Tests
+  #         command: |
+  #           cd backend
+  #           npm run test
 
             
-  scan-frontend:
-    executor: node-executor
-    steps:
-      - checkout
-      - restore_cache:
-          keys: [frontend-build]
-      - run:
-          name: Install dependencies
-          command: |
-            cd frontend
-            npm install
-      - run:
-          name: Scan frontend packages
-          command: |
-            cd frontend
-            npm audit fix --force --audit-level=critical
-            npm audit fix --force --audit-level=critical
-            npm audit fix --force --audit-level=critical
-            npm audit --audit-level=critical
+  # scan-frontend:
+  #   executor: node-executor
+  #   steps:
+  #     - checkout
+  #     - restore_cache:
+  #         keys: [frontend-build]
+  #     - run:
+  #         name: Install dependencies
+  #         command: |
+  #           cd frontend
+  #           npm install
+  #     - run:
+  #         name: Scan frontend packages
+  #         command: |
+  #           cd frontend
+  #           npm audit fix --force --audit-level=critical
+  #           npm audit fix --force --audit-level=critical
+  #           npm audit fix --force --audit-level=critical
+  #           npm audit --audit-level=critical
 
-  scan-backend:
-    executor: node-executor
-    steps:
-      - checkout
-      - restore_cache:
-          keys: [backend-build]
-      - run:
-          name: Install dependencies
-          command: |
-            cd backend
-            npm install
-      - run:
-          name: Scan backend packages
-          command: |
-            cd backend
-            npm audit fix --force --audit-level=critical
-            npm audit fix --force --audit-level=critical
-            npm audit fix --force --audit-level=critical
-            npm audit --audit-level=critical
+  # scan-backend:
+  #   executor: node-executor
+  #   steps:
+  #     - checkout
+  #     - restore_cache:
+  #         keys: [backend-build]
+  #     - run:
+  #         name: Install dependencies
+  #         command: |
+  #           cd backend
+  #           npm install
+  #     - run:
+  #         name: Scan backend packages
+  #         command: |
+  #           cd backend
+  #           npm audit fix --force --audit-level=critical
+  #           npm audit fix --force --audit-level=critical
+  #           npm audit fix --force --audit-level=critical
+  #           npm audit --audit-level=critical
 
-  deploy-infrastructure:
-    executor: python-executor
-    steps:
-      - checkout
-      - install_awscli
-      - run:
-          name: Ensure back-end infrastructure exists
-          command: |
-            aws cloudformation deploy \
-              --template-file .circleci/files/backend.yml \
-              --tags project=udapeople \
-              --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
-              --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"
-      - run:
-          name: Ensure front-end infrastructure exist
-          command: |
-            aws cloudformation deploy \
-              --template-file .circleci/files/frontend.yml \
-              --tags project=udapeople \
-              --stack-name "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}" \
-              --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"
-      - run:
-          name: Add back-end ip to ansible inventory
-          command: |
-            BACKEND_PUBLIC_IP=$(aws ec2 describe-instances \
-              --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" \
-              --query 'Reservations[*].Instances[*].PublicIpAddress' \
-              --output text)
-            echo $BACKEND_PUBLIC_IP >> .circleci/ansible/inventory.txt
-            cat .circleci/ansible/inventory.txt
-      - persist_to_workspace:
-          root: ~/
-          paths:
-            - project/.circleci/ansible/inventory.txt
-      # Here's where you will add some code to rollback on failure      
+  # deploy-infrastructure:
+  #   executor: python-executor
+  #   steps:
+  #     - checkout
+  #     - install_awscli
+  #     - run:
+  #         name: Ensure back-end infrastructure exists
+  #         command: |
+  #           aws cloudformation deploy \
+  #             --template-file .circleci/files/backend.yml \
+  #             --tags project=udapeople \
+  #             --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
+  #             --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"
+  #     - run:
+  #         name: Ensure front-end infrastructure exist
+  #         command: |
+  #           aws cloudformation deploy \
+  #             --template-file .circleci/files/frontend.yml \
+  #             --tags project=udapeople \
+  #             --stack-name "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}" \
+  #             --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"
+  #     - run:
+  #         name: Add back-end ip to ansible inventory
+  #         command: |
+  #           BACKEND_PUBLIC_IP=$(aws ec2 describe-instances \
+  #             --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" \
+  #             --query 'Reservations[*].Instances[*].PublicIpAddress' \
+  #             --output text)
+  #           echo $BACKEND_PUBLIC_IP >> .circleci/ansible/inventory.txt
+  #           cat .circleci/ansible/inventory.txt
+  #     - persist_to_workspace:
+  #         root: ~/
+  #         paths:
+  #           - project/.circleci/ansible/inventory.txt
+  #     # Here's where you will add some code to rollback on failure      
 
   configure-infrastructure:
     executor: python-executor
@@ -282,91 +282,91 @@ jobs:
         - destroy-environment
         - revert-migrations      
 
-  deploy-frontend:
-      executor: python-executor
-      steps:
-        # Checkout code from git
-        - checkout
-        - install_awscli
-        - install_nodejs
-        - restore_cache:
-            keys: [frontend-build]
-        - run:
-            name: Install dependencies
-            command: |
-              # your code here
-              cd frontend
-              npm install
-              npm audit fix --force --audit-level=critical
-              npm audit fix --force --audit-level=critical
-              npm audit fix --force --audit-level=critical
-              npm audit --audit-level=critical
-        - run:
-            name: Get backend url
-            command: |
-              # your code here
-              BACKEND_IP=$(aws ec2 describe-instances \
-                --filters "Name=tag:Name, Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" \
-                --query 'Reservations[*].Instances[*].PublicIpAddress' \
-                --output text)
-              export API_URL="http://${BACKEND_IP}:3030"
-              echo "${API_URL}"
-              echo API_URL="http://${BACKEND_IP}:3030" >> frontend/.env
-              cat frontend/.env
-        - run:
-            name: Deploy frontend objects
-            command: |
-              # your code here
-              cd frontend
-              npm run build
-              aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
-        # Here's where you will add some code to rollback on failure      
-        - destroy-environment
-        - revert-migrations
+  # deploy-frontend:
+  #     executor: python-executor
+  #     steps:
+  #       # Checkout code from git
+  #       - checkout
+  #       - install_awscli
+  #       - install_nodejs
+  #       - restore_cache:
+  #           keys: [frontend-build]
+  #       - run:
+  #           name: Install dependencies
+  #           command: |
+  #             # your code here
+  #             cd frontend
+  #             npm install
+  #             npm audit fix --force --audit-level=critical
+  #             npm audit fix --force --audit-level=critical
+  #             npm audit fix --force --audit-level=critical
+  #             npm audit --audit-level=critical
+  #       - run:
+  #           name: Get backend url
+  #           command: |
+  #             # your code here
+  #             BACKEND_IP=$(aws ec2 describe-instances \
+  #               --filters "Name=tag:Name, Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" \
+  #               --query 'Reservations[*].Instances[*].PublicIpAddress' \
+  #               --output text)
+  #             export API_URL="http://${BACKEND_IP}:3030"
+  #             echo "${API_URL}"
+  #             echo API_URL="http://${BACKEND_IP}:3030" >> frontend/.env
+  #             cat frontend/.env
+  #       - run:
+  #           name: Deploy frontend objects
+  #           command: |
+  #             # your code here
+  #             cd frontend
+  #             npm run build
+  #             aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
+  #       # Here's where you will add some code to rollback on failure      
+  #       - destroy-environment
+  #       - revert-migrations
                       
-  deploy-backend:
-      executor: python-executor
-      steps:
-        # Checkout code from git
-        - checkout
-        - install_ansible
-        - install_awscli
-        - install_nodejs
-        - restore_cache:
-            keys: [backend-build]
-        # Add ssh keys with fingerprint
-        - add_ssh_keys:
-            fingerprints:
-              - "77:b1:70:02:66:97:55:f1:c9:f7:26:3d:c8:c5:ba:32"
-        # attach workspace
-        - attach_workspace:
-            at: ~/
-        - run:
-            name: Install dependencies
-            command: |
-              cd backend
-              npm install
-        - run:
-            name: Package backend
-            command: |
-              # your code here
-              cd backend
-              npm run build
-              tar -czf artifact.tar.gz dist/* package*
-              cd ..
-              cp backend/artifact.tar.gz .circleci/ansible/roles/deploy/files
-        - run:
-            name: Deploy backend
-            command: |
-              export TYPEORM_MIGRATIONS_DIR=./migrations
-              export TYPEORM_ENTITIES=./modules/domain/**/*.entity{.ts,.js}
-              export TYPEORM_MIGRATIONS=./migrations/*.ts
-              cd .circleci/ansible
-              cat inventory.txt
-              ansible-playbook -i inventory.txt deploy-backend.yml
-        # Here's where you will add some code to rollback on failure  
-        - destroy-environment
-        - revert-migrations  
+  # deploy-backend:
+  #     executor: python-executor
+  #     steps:
+  #       # Checkout code from git
+  #       - checkout
+  #       - install_ansible
+  #       - install_awscli
+  #       - install_nodejs
+  #       - restore_cache:
+  #           keys: [backend-build]
+  #       # Add ssh keys with fingerprint
+  #       - add_ssh_keys:
+  #           fingerprints:
+  #             - "77:b1:70:02:66:97:55:f1:c9:f7:26:3d:c8:c5:ba:32"
+  #       # attach workspace
+  #       - attach_workspace:
+  #           at: ~/
+  #       - run:
+  #           name: Install dependencies
+  #           command: |
+  #             cd backend
+  #             npm install
+  #       - run:
+  #           name: Package backend
+  #           command: |
+  #             # your code here
+  #             cd backend
+  #             npm run build
+  #             tar -czf artifact.tar.gz dist/* package*
+  #             cd ..
+  #             cp backend/artifact.tar.gz .circleci/ansible/roles/deploy/files
+  #       - run:
+  #           name: Deploy backend
+  #           command: |
+  #             export TYPEORM_MIGRATIONS_DIR=./migrations
+  #             export TYPEORM_ENTITIES=./modules/domain/**/*.entity{.ts,.js}
+  #             export TYPEORM_MIGRATIONS=./migrations/*.ts
+  #             cd .circleci/ansible
+  #             cat inventory.txt
+  #             ansible-playbook -i inventory.txt deploy-backend.yml
+  #       # Here's where you will add some code to rollback on failure  
+  #       - destroy-environment
+  #       - revert-migrations  
 
 #   smoke-test:
 #     docker:
@@ -429,29 +429,29 @@ jobs:
 workflows:
   default:
     jobs:
-      - build-frontend
-      - build-backend
-      - test-frontend:
-          requires: [build-frontend]
-      - test-backend:
-          requires: [build-backend]
-      - scan-backend:
-          requires: [build-backend]
-      - scan-frontend:
-          requires: [build-frontend]
-      - deploy-infrastructure:
-          requires: [test-frontend, test-backend, scan-frontend, scan-backend]
-          filters:
-            branches:
-              only: [main]
-      - configure-infrastructure:
-          requires: [deploy-infrastructure]
+      # - build-frontend
+      # - build-backend
+      # - test-frontend:
+      #     requires: [build-frontend]
+      # - test-backend:
+      #     requires: [build-backend]
+      # - scan-backend:
+      #     requires: [build-backend]
+      # - scan-frontend:
+      #     requires: [build-frontend]
+      # - deploy-infrastructure:
+      #     requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+      #     filters:
+      #       branches:
+      #         only: [main]
+      - configure-infrastructure
+      #     requires: [deploy-infrastructure]
       - run-migrations:
           requires: [configure-infrastructure]
-      - deploy-frontend:
-          requires: [run-migrations]
-      - deploy-backend:
-          requires: [run-migrations]
+      # - deploy-frontend:
+      #     requires: [run-migrations]
+      # - deploy-backend:
+      #     requires: [run-migrations]
       # - smoke-test:
       #     requires: [deploy-backend, deploy-frontend]
       # - cloudfront-update:
