@@ -265,10 +265,6 @@ jobs:
             command: |
               cd backend
               npm install
-              console.log("Node version:", process.version);
-              console.log("NPM version:", process.npm_execpath);
-              console.log("TypeORM version:", require("typeorm/package.json").version);
-              console.log("ts-node version:", require("ts-node/package.json").version);
               npm run migrations > migrations_dump.txt
         - run:
             name: Send migration results to kvdb
