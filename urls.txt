@@ -1,5 +1,5 @@
 [URL01]
-https://github.com/Onyekachukwu-Nweke/UdaPeople-AutoDeploy
+https://github.com/Onyekachukwu-Nweke/UdaPeople-Autodeploy
 
 [URL02]
-http://dkhbkqj4bdr35.cloudfront.net/#/employees
+https://dkhbkqj4bdr35.cloudfront.net/#/employees
